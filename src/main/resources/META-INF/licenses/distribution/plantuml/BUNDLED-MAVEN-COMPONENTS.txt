@@ -1,0 +1,17 @@
+com.aayushatharva.brotli4j:brotli4j:1.23.0
+com.aayushatharva.brotli4j:service:1.23.0
+com.github.librepdf:openpdf:3.0.5
+com.google.errorprone:error_prone_annotations:2.47.0
+com.google.guava:failureaccess:1.0.3
+com.google.guava:guava:33.6.0-jre
+com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+com.google.j2objc:j2objc-annotations:3.1
+org.eclipse.elk:org.eclipse.elk.alg.common:0.12.0
+org.eclipse.elk:org.eclipse.elk.alg.layered:0.12.0
+org.eclipse.elk:org.eclipse.elk.alg.mrtree:0.12.0
+org.eclipse.elk:org.eclipse.elk.core:0.12.0
+org.eclipse.elk:org.eclipse.elk.graph:0.12.0
+org.eclipse.xtext:org.eclipse.xtext.xbase.lib:2.44.0
+org.scilab.forge:jlatexmath-font-cyrillic:1.0.7
+org.scilab.forge:jlatexmath-font-greek:1.0.7
+org.scilab.forge:jlatexmath:1.0.7
