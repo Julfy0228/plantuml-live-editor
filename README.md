@@ -2,7 +2,7 @@
 
 Минималистичный портативный редактор PlantUML: код слева, живой просмотр справа. Один JAR, тёмный интерфейс, локальный рендер без сервера.
 
-**Релиз 1.0 · Java 17+ · Windows / Linux / macOS**
+**Релиз 1.0.1 · Java 17+ · Windows / Linux / macOS**
 
 ## Запуск
 
@@ -103,4 +103,5 @@ Smetana поддерживает не все особенности Graphviz и 
 A portable, offline PlantUML editor with a dark Swing UI, line numbers and syntax highlighting, debounced background preview, clipboard image copy, and PNG/SVG export. Requires Java 17+. Run `java -jar plantuml-live-editor.jar`; build with `mvn clean package`.
 
 UI language follows the system locale: Russian for `ru`, English otherwise. No saved application settings. Invalid code is reported, never automatically repaired. Third-party notices and source links are included in the repository and in the JAR.
+
 

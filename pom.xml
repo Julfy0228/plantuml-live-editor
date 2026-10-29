@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>local.puml</groupId>
   <artifactId>plantuml-live-editor</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
   <name>PlantUML Live Editor</name>
   <licenses><license><name>GNU General Public License v3 or later</name><url>https://www.gnu.org/licenses/gpl-3.0.html</url><distribution>repo</distribution></license></licenses>
   <properties>
@@ -122,4 +122,5 @@
     </plugins>
   </build>
 </project>
+
 

@@ -24,6 +24,21 @@ public final class I18n {
         return String.format(LANGUAGE, MESSAGES.getString(key), arguments);
     }
 
+    public static String count(String key, int count) {
+        return count(key, count, LANGUAGE);
+    }
+
+    static String count(String key, int count, Locale locale) {
+        String form = "one";
+        int last = count % 10;
+        int lastTwo = count % 100;
+        if ("ru".equals(languageFor(locale).getLanguage())) {
+            form = last == 1 && lastTwo != 11 ? "one"
+                    : last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14) ? "few" : "many";
+        } else if (count != 1) form = "many";
+        return String.format(locale, messagesFor(locale).getString(key + "." + form), count);
+    }
+
     public static Locale locale() {
         return LANGUAGE;
     }
@@ -42,4 +57,5 @@ public final class I18n {
         }
     }
 }
+
 

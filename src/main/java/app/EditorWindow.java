@@ -24,7 +24,7 @@ import java.util.Locale;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
+
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -55,7 +55,7 @@ import org.fife.ui.rtextarea.SearchResult;
 public final class EditorWindow extends JFrame {
     static final String EXAMPLE = "@startuml\nAlice -> Bob : hello\n@enduml\n";
     private final RSyntaxTextArea editor = new RSyntaxTextArea();
-    private final JLabel filename = new JLabel();
+
     private final JLabel position = new JLabel(" ");
     private final JLabel status = new JLabel(" ");
     private final JLabel zoomLabel = new JLabel("100%");
@@ -107,8 +107,8 @@ public final class EditorWindow extends JFrame {
         toolbar.add(iconButton(openFile, ToolbarIcon.Kind.OPEN, text("file.open") + " · " + shortcutName("O")));
         toolbar.add(iconButton(saveFile, ToolbarIcon.Kind.SAVE, text("file.save") + " · " + shortcutName("S")));
         toolbar.addSeparator(new Dimension(16, 1));
-        toolbar.add(filename);
-        toolbar.add(Box.createHorizontalGlue());
+
+
         toolbar.add(iconButton(action(text("search.find"), () -> showSearch(false)), ToolbarIcon.Kind.SEARCH,
                 text("search.find") + " · " + shortcutName("F")));
         add(toolbar, BorderLayout.NORTH);
@@ -116,9 +116,10 @@ public final class EditorWindow extends JFrame {
         RTextScrollPane editorScroll = new RTextScrollPane(editor);
         editorScroll.setLineNumbersEnabled(true);
         editorScroll.setBorder(null);
-        editorScroll.getGutter().setBackground(new Color(0x1C2028));
+        editorScroll.getGutter().setBackground(UiStyle.editorRail(editor.getBackground()));
         editorScroll.getGutter().setLineNumberColor(new Color(0x8995A9));
-        editorScroll.getGutter().setBorderColor(new Color(0x303745));
+        editorScroll.getGutter().setBorderColor(UiStyle.editorRail(editor.getBackground()));
+        UiStyle.scrollPane(editorScroll, editor.getBackground());
         JPanel left = new JPanel(new BorderLayout());
         left.add(editorScroll, BorderLayout.CENTER);
         setupSearch();
@@ -126,31 +127,21 @@ public final class EditorWindow extends JFrame {
 
         JPanel right = new JPanel(new BorderLayout());
         right.add(preview.scrollPane(), BorderLayout.CENTER);
-        JPanel controls = new JPanel(new BorderLayout(8, 8));
-        controls.setBorder(BorderFactory.createEmptyBorder(8, 10, 10, 10));
-        JPanel scaleControls = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
-        scaleControls.add(iconButton(action(text("preview.zoomOut"), () -> preview.changeZoom(1 / 1.2)),
-                ToolbarIcon.Kind.MINUS, text("preview.zoomOut") + " · " + text("preview.wheel")));
-        zoomLabel.setPreferredSize(new Dimension(88, 28));
-        zoomLabel.setHorizontalAlignment(JLabel.CENTER);
-        scaleControls.add(zoomLabel);
-        scaleControls.add(iconButton(action(text("preview.zoomIn"), () -> preview.changeZoom(1.2)), ToolbarIcon.Kind.PLUS, text("preview.zoomIn")));
-        scaleControls.add(iconButton(action(text("preview.fit"), preview::fit), ToolbarIcon.Kind.FIT, text("preview.fit")));
+        JButton zoomOut = iconButton(action(text("preview.zoomOut"), () -> preview.changeZoom(1 / 1.2)),
+                ToolbarIcon.Kind.MINUS, text("preview.zoomOut") + " · " + text("preview.wheel"));
+        JButton zoomIn = iconButton(action(text("preview.zoomIn"), () -> preview.changeZoom(1.2)),
+                ToolbarIcon.Kind.PLUS, text("preview.zoomIn"));
+        JButton fit = iconButton(action(text("preview.fit"), preview::fit), ToolbarIcon.Kind.FIT, text("preview.fit"));
         JButton actual = new JButton(action("1:1", preview::actualSize));
         actual.setToolTipText(text("preview.actualSize"));
-        scaleControls.add(actual);
-        JPanel exports = new JPanel(new FlowLayout(FlowLayout.RIGHT, 6, 0));
+        UiStyle.square(actual);
         copy = new JButton(action(text("image.copy"), this::copyImage));
         copy.setIcon(new ToolbarIcon(ToolbarIcon.Kind.COPY));
         copy.setToolTipText(text("image.copyTooltip"));
         saveImage = new JButton(action(text("image.save"), this::export));
         saveImage.setIcon(new ToolbarIcon(ToolbarIcon.Kind.SAVE));
-        exports.add(copy);
-        exports.add(saveImage);
-        controls.add(scaleControls, BorderLayout.NORTH);
-        controls.add(exports, BorderLayout.SOUTH);
-        right.add(controls, BorderLayout.SOUTH);
-
+        saveImage.setToolTipText(text("image.save"));
+        right.add(new DiagramControls(zoomOut, zoomLabel, zoomIn, fit, actual, copy, saveImage), BorderLayout.SOUTH);
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, left, right);
         split.setBorder(null);
         split.setResizeWeight(0.45);
@@ -210,7 +201,7 @@ public final class EditorWindow extends JFrame {
         button.setIcon(new ToolbarIcon(icon));
         button.setToolTipText(tooltip);
         button.getAccessibleContext().setAccessibleName((String) action.getValue(Action.NAME));
-        button.setPreferredSize(new Dimension(36, 34));
+        UiStyle.square(button);
         return button;
     }
 
@@ -347,8 +338,6 @@ public final class EditorWindow extends JFrame {
 
     private void updateTitle() {
         String name = file == null ? text("file.untitled") : file.getFileName().toString();
-        filename.setText(name + (dirty ? " ●" : ""));
-        filename.setToolTipText(file == null ? text("file.newDocument") : file.toAbsolutePath().toString());
         setTitle((dirty ? "● " : "") + name + " — PlantUML Live Editor");
     }
 
@@ -569,10 +558,12 @@ public final class EditorWindow extends JFrame {
         context.setMarkAll(false);
         SearchResult result = all ? SearchEngine.replaceAll(editor, context)
                 : replace ? SearchEngine.replace(editor, context) : SearchEngine.find(editor, context);
-        setStatus(result.wasFound() ? (all ? text("search.replacements", result.getCount()) : text("search.found"))
-                : text("search.notFound"), false);
+        setStatus(all ? I18n.count("search.replaced", result.getCount())
+                : I18n.count("search.matches", SearchCounts.literal(editor.getText(), searchText.getText(), caseSensitive.isSelected())), false);
     }
 }
+
+
 
 
 
